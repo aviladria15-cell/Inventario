@@ -5,6 +5,7 @@
 package vista_Libro_Contable;
 
 
+import Modelo.cuenta;
 import ModeloDAO.CuentaDao;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -12,7 +13,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Adrian
+ * @author michelle
  */
 public class Frm_Cuenta extends javax.swing.JFrame {
 
@@ -45,16 +46,29 @@ public class Frm_Cuenta extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         TablaCuentas = new javax.swing.JTable();
         jLabel3 = new javax.swing.JLabel();
-        txtNombreCuenta = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        txtCodigoCuenta = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        jComboBoxTipoCuenta = new javax.swing.JComboBox<>();
+        jComboBoxCuentaN4 = new javax.swing.JComboBox<>();
         jLabel6 = new javax.swing.JLabel();
-        txtSaldo_Inicial = new javax.swing.JTextField();
-        jLabel7 = new javax.swing.JLabel();
-        txtDescripcion = new javax.swing.JTextField();
         btbAgregarCuenta = new javax.swing.JButton();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jComboBoxRubro = new javax.swing.JComboBox<>();
+        jComboBoxSubgrupo = new javax.swing.JComboBox<>();
+        jComboBoxGrupo = new javax.swing.JComboBox<>();
+        jComboBoxSubcuentaN5 = new javax.swing.JComboBox<>();
+        jComboBoxTipoCuenta = new javax.swing.JComboBox<>();
+        jComboBoxSubcuentaN6 = new javax.swing.JComboBox<>();
+        txtSaldo_inicial = new javax.swing.JTextField();
+        txtCodigoCuenta = new javax.swing.JTextField();
+        txtNombreCuenta = new javax.swing.JTextField();
+        txtDescripcion = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
         FondoCompleto = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -97,58 +111,100 @@ public class Frm_Cuenta extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(TablaCuentas);
 
-        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 360, 1310, 240));
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 90, 810, 590));
 
         jLabel3.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setText("Nombre :");
-        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 140, -1, 30));
-
-        txtNombreCuenta.setFont(new java.awt.Font("Georgia", 0, 14)); // NOI18N
-        txtNombreCuenta.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jPanel1.add(txtNombreCuenta, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 140, 220, 30));
+        jLabel3.setText("1. Grupo:");
+        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 80, 190, 30));
 
         jLabel4.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setText("Códico :");
-        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 230, -1, -1));
+        jLabel4.setText("2. Subgrupo:");
+        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 120, 190, 30));
 
-        txtCodigoCuenta.setFont(new java.awt.Font("Georgia", 0, 14)); // NOI18N
-        txtCodigoCuenta.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jPanel1.add(txtCodigoCuenta, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 230, 220, 30));
-
+        jLabel5.setBackground(new java.awt.Color(153, 153, 153));
         jLabel5.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel5.setText("Tipo Cuenta :");
-        jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 140, -1, -1));
+        jLabel5.setText("Descripción:");
+        jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 440, 130, 30));
 
-        jComboBoxTipoCuenta.setFont(new java.awt.Font("Georgia", 1, 14)); // NOI18N
-        jComboBoxTipoCuenta.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ACTIVO", "PASIVO", "PATRIMONIO", "INGRESO", "GASTO" }));
-        jPanel1.add(jComboBoxTipoCuenta, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 140, 150, 30));
+        jComboBoxCuentaN4.setFont(new java.awt.Font("Georgia", 1, 14)); // NOI18N
+        jComboBoxCuentaN4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBoxCuentaN4ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jComboBoxCuentaN4, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 200, 270, 30));
 
+        jLabel6.setBackground(new java.awt.Color(153, 153, 153));
         jLabel6.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/billete-de-banco.png"))); // NOI18N
         jLabel6.setText("Saldo Inicial :");
-        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 230, -1, -1));
-
-        txtSaldo_Inicial.setFont(new java.awt.Font("Georgia", 0, 14)); // NOI18N
-        txtSaldo_Inicial.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jPanel1.add(txtSaldo_Inicial, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 232, 150, 30));
-
-        jLabel7.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
-        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel7.setText("Descripción :");
-        jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 140, -1, -1));
-
-        txtDescripcion.setFont(new java.awt.Font("Georgia", 0, 14)); // NOI18N
-        txtDescripcion.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jPanel1.add(txtDescripcion, new org.netbeans.lib.awtextra.AbsoluteConstraints(1000, 140, 210, 30));
+        jLabel6.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 480, 180, -1));
 
         btbAgregarCuenta.setFont(new java.awt.Font("Georgia", 1, 14)); // NOI18N
         btbAgregarCuenta.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/cuenta-bancaria.png"))); // NOI18N
         btbAgregarCuenta.setText("Agregar");
-        jPanel1.add(btbAgregarCuenta, new org.netbeans.lib.awtextra.AbsoluteConstraints(1080, 660, 150, -1));
+        jPanel1.add(btbAgregarCuenta, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 550, 150, -1));
+
+        jLabel8.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel8.setText("3. Rubro:");
+        jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 160, 190, 30));
+
+        jLabel9.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel9.setText("4. Cuenta (N4):");
+        jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 200, 190, 30));
+
+        jLabel10.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel10.setText("5. Subcuenta (N5):");
+        jPanel1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 240, 200, 30));
+
+        jLabel11.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
+        jLabel11.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel11.setText("6. Subcuenta (N6):");
+        jPanel1.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 280, 190, 30));
+
+        jComboBoxRubro.setFont(new java.awt.Font("Georgia", 1, 14)); // NOI18N
+        jPanel1.add(jComboBoxRubro, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 160, 270, 30));
+
+        jPanel1.add(jComboBoxSubgrupo, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 120, 270, 30));
+
+        jPanel1.add(jComboBoxGrupo, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 80, 270, 30));
+
+        jPanel1.add(jComboBoxSubcuentaN5, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 240, 270, 30));
+
+        jPanel1.add(jComboBoxTipoCuenta, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 400, 270, 30));
+
+        jPanel1.add(jComboBoxSubcuentaN6, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 280, 270, 30));
+        jPanel1.add(txtSaldo_inicial, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 480, 270, 30));
+        jPanel1.add(txtCodigoCuenta, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 320, 270, 30));
+        jPanel1.add(txtNombreCuenta, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 360, 270, 30));
+        jPanel1.add(txtDescripcion, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 440, 270, 30));
+
+        jLabel7.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel7.setText("Código base:");
+        jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 320, 150, 30));
+
+        jLabel12.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
+        jLabel12.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel12.setText("Nombre de Cuenta:");
+        jPanel1.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 360, 190, 30));
+
+        jLabel13.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
+        jLabel13.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel13.setText("Tipo de Saldo:");
+        jPanel1.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 400, 140, 30));
+
+        jLabel14.setFont(new java.awt.Font("Georgia", 3, 18)); // NOI18N
+        jLabel14.setText("Tipo de Saldo:");
+        jPanel1.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 400, 140, 30));
 
         FondoCompleto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/fondoMordeno.jpg"))); // NOI18N
         jPanel1.add(FondoCompleto, new org.netbeans.lib.awtextra.AbsoluteConstraints(-3, -4, 1380, 750));
@@ -163,6 +219,10 @@ public class Frm_Cuenta extends javax.swing.JFrame {
 // TODO add your handling code here:
     }//GEN-LAST:event_btbVolverMenuActionPerformed
 
+    private void jComboBoxCuentaN4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxCuentaN4ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBoxCuentaN4ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -173,19 +233,32 @@ public class Frm_Cuenta extends javax.swing.JFrame {
     public static javax.swing.JTable TablaCuentas;
     public static javax.swing.JButton btbAgregarCuenta;
     public static javax.swing.JButton btbVolverMenu;
-    public static javax.swing.JComboBox<String> jComboBoxTipoCuenta;
+    public javax.swing.JComboBox<cuenta> jComboBoxCuentaN4;
+    public static javax.swing.JComboBox<cuenta> jComboBoxGrupo;
+    public javax.swing.JComboBox<cuenta> jComboBoxRubro;
+    public javax.swing.JComboBox<cuenta> jComboBoxSubcuentaN5;
+    public javax.swing.JComboBox<cuenta> jComboBoxSubcuentaN6;
+    public javax.swing.JComboBox<cuenta> jComboBoxSubgrupo;
+    public javax.swing.JComboBox<cuenta> jComboBoxTipoCuenta;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     public static javax.swing.JTextField txtCodigoCuenta;
     public static javax.swing.JTextField txtDescripcion;
     public static javax.swing.JTextField txtNombreCuenta;
-    public static javax.swing.JTextField txtSaldo_Inicial;
+    public static javax.swing.JTextField txtSaldo_inicial;
     // End of variables declaration//GEN-END:variables
 }

@@ -565,7 +565,7 @@ if (respuesta == JOptionPane.YES_OPTION) {
      try {
          ModeloDAO.CuentaDao cuantasDao = new CuentaDao();
          
-         cuantasDao.cargarComboCuentasInventarioo(Inventario_Unidad.jComboBoxCuantDebitar);
+         cuantasDao.cargarComboCuentasInventario(Inventario_Unidad.jComboBoxCuantDebitar);
          
          cuantasDao.cargarComboCuentasPasivo(Inventario_Unidad.jComboBoxCuentaAcreditar);
      } catch (ClassNotFoundException ex) {

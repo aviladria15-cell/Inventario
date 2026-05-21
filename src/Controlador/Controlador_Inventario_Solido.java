@@ -552,7 +552,7 @@ seleccionarItemCombo(Inventario_Solido.jComboUbicacionSolido, valorUbicacion);
          ModeloDAO.CuentaDao cuentaDao = new CuentaDao();
          
         try {
-            cuentaDao.cargarComboCuentasInventarioo(Inventario_Solido.jComboBoxCuentaDebitar);
+            cuentaDao.cargarComboCuentasInventario(Inventario_Solido.jComboBoxCuentaDebitar);
         } catch (ClassNotFoundException ex) {
             System.getLogger(Controlador_Inventario_Solido.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         } catch (SQLException ex) {

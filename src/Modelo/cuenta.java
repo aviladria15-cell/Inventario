@@ -1,8 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package Modelo;
+
+ package Modelo;
 
 public class cuenta {
    
@@ -12,19 +9,29 @@ public class cuenta {
     private String tipo;
     private String Descripcion;
     private double saldo_inicial;
+    private int nivel;          // Nivel jerárquico (1 al 6) según el PCP 2024
+    private Integer parent_id;  // ID de la cuenta padre (permite nulos para niveles raíz)
+    private boolean activo;
    
-    // Constructor completo
-    public cuenta(int idCuenta, String codigo, String nombre, String tipo, String Descripcion, double saldo_inicial) {
+    // Constructor completo actualizado
+    public cuenta(int idCuenta, String codigo, String nombre, String tipo, String Descripcion, double saldo_inicial, int nivel, Integer parent_id, boolean activo) {
         this.idCuenta = idCuenta;
         this.codigo = codigo;
         this.nombre = nombre;
         this.tipo = tipo;
         this.Descripcion = Descripcion;
         this.saldo_inicial = saldo_inicial;
+        this.nivel = nivel;
+        this.parent_id = parent_id;
+        this.activo = activo;
     }
 
-    public cuenta() {}
+    // Constructor vacío
+    public cuenta() {
+     this.activo = true; // Por defecto toda cuenta nueva nace activa
+    }
 
+    // Getters y Setters
     public int getIdCuenta() {
         return idCuenta;
     }
@@ -73,10 +80,38 @@ public class cuenta {
         this.saldo_inicial = saldo_inicial;
     }
 
+    public int getNivel() {
+        return nivel;
+    }
 
-    // toString() CLARO, CON SALDO Y CÓDIGO
+    public void setNivel(int nivel) {
+        this.nivel = nivel;
+    }
+    
+   
+    public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
+    }
+
+    public Integer getParent_id() {
+        return parent_id;
+    }
+
+    public void setParent_id(Integer parent_id) {
+        this.parent_id = parent_id;
+    }
+
+    /**
+     * Sobrescribimos el método toString() para que al meter los objetos 'cuenta'
+     * dentro de los JComboBox de la interfaz visual, se despliegue únicamente el 
+     * código junto con el nombre de la cuenta contable de forma limpia.
+     */
     @Override
     public String toString() {
-        return String.format("%s (%s) - : $%.2f", nombre, codigo,saldo_inicial);
+        return this.codigo + " - " + this.nombre;
     }
 }

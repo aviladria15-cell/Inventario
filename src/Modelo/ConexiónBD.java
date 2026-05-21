@@ -33,7 +33,6 @@ public class ConexiónBD {
             }
 
             con = DriverManager.getConnection(URL_INVENTARIO, USUARIO, CONTRASEÑA);
-
             crearTablas();
 
             if (baseRecienCreada) {
@@ -57,6 +56,8 @@ public class ConexiónBD {
 
     private void crearTablas() {
         String sql = """
+            SET FOREIGN_KEY_CHECKS=0;
+
             CREATE TABLE IF NOT EXISTS `almacen` (
               `id_ubicacion` int(11) NOT NULL AUTO_INCREMENT,
               `pasillo` varchar(50) NOT NULL,
@@ -85,17 +86,6 @@ public class ConexiónBD {
               UNIQUE KEY `nombre` (`nombre`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-            CREATE TABLE IF NOT EXISTS `cuenta` (
-              `id_cuenta` int(11) NOT NULL AUTO_INCREMENT,
-              `codigo` varchar(20) NOT NULL,
-              `nombre` varchar(100) NOT NULL,
-              `tipo` enum('ACTIVO','PASIVO','PATRIMONIO','INGRESO','GASTO') NOT NULL,
-              `descripcion` varchar(255) DEFAULT NULL,
-              `saldo_inicial` decimal(18,2) DEFAULT 0.00,
-              PRIMARY KEY (`id_cuenta`),
-              UNIQUE KEY `codigo` (`codigo`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
             CREATE TABLE IF NOT EXISTS `empleado` (
               `idEmpleado` int(11) NOT NULL AUTO_INCREMENT,
               `nombre` varchar(50) DEFAULT NULL,
@@ -114,6 +104,21 @@ public class ConexiónBD {
               `paisOrigen` varchar(50) DEFAULT NULL,
               PRIMARY KEY (`idMarca`),
               UNIQUE KEY `nombre` (`nombre`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+            CREATE TABLE IF NOT EXISTS `cuenta` (
+              `id_cuenta` int(11) NOT NULL AUTO_INCREMENT,
+              `codigo` varchar(25) NOT NULL,
+              `nombre` varchar(255) NOT NULL,
+              `tipo` varchar(45) NOT NULL,
+              `descripcion` varchar(255) DEFAULT NULL,
+              `saldo_inicial` decimal(15,2) NOT NULL DEFAULT 0.00,
+              `nivel` int(11) NOT NULL DEFAULT 1,
+              `parent_id` int(11) DEFAULT NULL,
+              `activo` boolean DEFAULT TRUE,
+              PRIMARY KEY (`id_cuenta`),
+              UNIQUE KEY `codigo_unico` (`codigo`),
+              CONSTRAINT `fk_cuenta_parent` FOREIGN KEY (`parent_id`) REFERENCES `cuenta` (`id_cuenta`) ON DELETE RESTRICT
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
             CREATE TABLE IF NOT EXISTS `proveedor` (
@@ -261,11 +266,11 @@ public class ConexiónBD {
               CONSTRAINT `movimiento_ibfk_1` FOREIGN KEY (`idProducto`) REFERENCES `producto` (`idProducto`) ON UPDATE CASCADE,
               CONSTRAINT `movimiento_ibfk_2` FOREIGN KEY (`id_inventario`) REFERENCES `inventario` (`id_inventario`) ON DELETE CASCADE ON UPDATE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+            SET FOREIGN_KEY_CHECKS=1;
             """;
 
         try (Statement st = con.createStatement()) {
-            st.execute("SET FOREIGN_KEY_CHECKS=0;");
-            
             String[] sentencias = sql.split(";");
             for (String sentencia : sentencias) {
                 sentencia = sentencia.trim();
@@ -273,8 +278,6 @@ public class ConexiónBD {
                     st.execute(sentencia);
                 }
             }
-            
-            st.execute("SET FOREIGN_KEY_CHECKS=1;");
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al crear tablas:\n" + e.getMessage());
             e.printStackTrace();
@@ -333,9 +336,9 @@ public class ConexiónBD {
 
     private void crearDatosIniciales() {
         try {
+            // 1. INSERTAR EMPLEADO ADMINISTRADOR
             String sql = "INSERT IGNORE INTO empleado (nombre, apellido, cedula, fecha_nacimiento, email, telefono, cargo) " +
                          "VALUES ('Admin', 'Sistema', '0000000000', '2000-01-01', 'bot@sistema.com', '0000000000', 'Dueño')";
-            
             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.executeUpdate();
             int idEmpleado = 0;
@@ -344,9 +347,10 @@ public class ConexiónBD {
             rs.close();
             ps.close();
 
+            // 2. INSERTAR USUARIO ADMINISTRADOR
             String contrasenaPlana = "inventario.01";
             String contrasenaCifrada = BCrypt.hashpw(contrasenaPlana, BCrypt.gensalt(12));
-
+            
             sql = "INSERT IGNORE INTO usuario (nombreUsuario, clave, nivel_acceso, estado, idEmpleado) " +
                   "VALUES ('Admin', ?, 'Alto', 'Activo', ?)";
             ps = con.prepareStatement(sql);
@@ -355,11 +359,82 @@ public class ConexiónBD {
             ps.executeUpdate();
             ps.close();
 
+            // 3. POBLAR TABLA CUENTA CON EL PCP 2024 (INCLUYENDO COLUMNA ACTIVO)
+            Statement stmt = con.createStatement();
+            
+            // NIVEL 1: GRUPOS
+            stmt.addBatch("INSERT IGNORE INTO cuenta (id_cuenta, codigo, nombre, tipo, descripcion, saldo_inicial, nivel, parent_id, activo) VALUES " +
+                         "(1, '1', 'ACTIVO', 'Deudora', 'Representa los bienes y derechos del ente', 0.00, 1, NULL, true), " +
+                         "(2, '2', 'PASIVO', 'Acreedora', 'Representa las obligaciones y deudas del ente', 0.00, 1, NULL, true), " +
+                         "(3, '3', 'PATRIMONIO', 'Acreedora', 'Representa el patrimonio neto acumulado', 0.00, 1, NULL, true), " +
+                         "(4, '4', 'INGRESOS', 'Acreedora', 'Ingresos públicos ordinarios y extraordinarios', 0.00, 1, NULL, true), " +
+                         "(5, '5', 'GASTOS', 'Deudora', 'Gastos operativos, de personal y transferencias', 0.00, 1, NULL, true), " +
+                         "(6, '6', 'CUENTAS DE ORDEN', 'Deudora', 'Cuentas de control y contingencias', 0.00, 1, NULL, true), " +
+                         "(7, '7', 'CUENTAS DE CIERRE', 'Acreedora', 'Cuentas utilizadas para el cierre del ejercicio', 0.00, 1, NULL, true)");
+
+            // NIVEL 2: SUBGRUPOS
+            stmt.addBatch("INSERT IGNORE INTO cuenta (id_cuenta, codigo, nombre, tipo, descripcion, saldo_inicial, nivel, parent_id, activo) VALUES " +
+                         "(8, '1.1', 'ACTIVO CORRIENTE', 'Deudora', 'Bienes y derechos líquidos o realizables a corto plazo', 0.00, 2, 1, true), " +
+                         "(9, '1.2', 'ACTIVO NO CORRIENTE', 'Deudora', 'Bienes y derechos a largo plazo, propiedades y equipos', 0.00, 2, 1, true), " +
+                         "(10, '2.1', 'PASIVO CORRIENTE', 'Acreedora', 'Obligaciones exigibles a corto plazo', 0.00, 2, 2, true), " +
+                         "(11, '2.2', 'PASIVO NO CORRIENTE', 'Acreedora', 'Obligaciones y deudas a largo plazo', 0.00, 2, 2, true), " +
+                         "(12, '3.1', 'PATRIMONIO NETO', 'Acreedora', 'Capital, reservas y resultados acumulados', 0.00, 2, 3, true), " +
+                         "(13, '4.1', 'INGRESOS ORDINARIOS', 'Acreedora', 'Ingresos recurrentes por tributos o gestión', 0.00, 2, 4, true), " +
+                         "(14, '4.2', 'INGRESOS EXTRAORDINARIOS', 'Acreedora', 'Ingresos no recurrentes del ente público', 0.00, 2, 4, true), " +
+                         "(15, '5.1', 'GASTOS DE PERSONAL', 'Deudora', 'Sueldos, salarios y beneficios del personal', 0.00, 2, 5, true), " +
+                         "(16, '5.2', 'GASTOS OPERATIVOS', 'Deudora', 'Compra de bienes y servicios para el funcionamiento', 0.00, 2, 5, true), " +
+                         "(17, '6.1', 'CUENTAS DE ORDEN DEUDORAS', 'Deudora', 'Responsabilidades e intereses deudores', 0.00, 2, 6, true), " +
+                         "(18, '6.2', 'CUENTAS DE ORDEN ACREEDORAS', 'Acreedora', 'Responsabilidades e intereses acreedores', 0.00, 2, 6, true), " +
+                         "(19, '7.1', 'CIERRE DEL EJERCICIO ECONOMICO FINANCIERO', 'Acreedora', 'Operaciones finales de cuadre de saldos', 0.00, 2, 7, true)");
+
+            // NIVEL 3: RUBROS
+            stmt.addBatch("INSERT IGNORE INTO cuenta (id_cuenta, codigo, nombre, tipo, descripcion, saldo_inicial, nivel, parent_id, activo) VALUES " +
+                         "(21, '1.1.1', 'DISPONIBILIDADES', 'Deudora', 'Efectivo en caja y cuentas bancarias del ente', 0.00, 3, 8, true), " +
+                         "(22, '1.1.2', 'INVERSIONES FINANCIERAS', 'Deudora', 'Colocaciones financieras a corto plazo', 0.00, 3, 8, true), " +
+                         "(23, '1.1.3', 'CUENTAS POR COBRAR', 'Deudora', 'Derechos de cobro exigibles en el corto plazo', 0.00, 3, 8, true), " +
+                         "(24, '1.2.1', 'PROPIEDADES, PLANTA Y EQUIPOS', 'Deudora', 'Bienes tangibles e inmuebles de uso institucional', 0.00, 3, 9, true), " +
+                         "(25, '1.2.2', 'BIENES DE USO PUBLICO','Deudora', 'Bienes del dominio público', 0.00, 3, 9, true), " +
+                         "(26, '2.1.1', 'CUENTAS POR PAGAR A CORTO PLAZO', 'Acreedora', 'Obligaciones comerciales e institucionales inmediatas', 0.00, 3, 10, true), " +
+                         "(27, '3.1.1', 'CAPITAL', 'Acreedora', 'Aportes iniciales e institucionales', 0.00, 3, 12, true), " +
+                         "(28, '3.1.2', 'RESULTADOS ACUMULADOS', 'Acreedora', 'Excedentes o déficits de ejercicios anteriores', 0.00, 3, 12, true), " +
+                         "(29, '4.1.1', 'INGRESOS TRIBUTARIOS', 'Acreedora', 'Recaudación de impuestos y tasas normadas', 0.00, 3, 13, true), " +
+                         "(30, '5.1.1', 'REMUNERACIONES', 'Deudora', 'Pagos fijos y asignaciones básicas de ley', 0.00, 3, 15, true), " +
+                         "(31, '7.1.1', 'RESUMEN DE INGRESOS Y GASTOS', 'Acreedora', 'Agrupación de saldos del periodo analizado', 0.00, 3, 19, true), " +
+                         "(32, '7.1.2', 'RESULTADO DE LA GESTIÓN', 'Acreedora', 'Determinación del ahorro o desahorro final', 0.00, 3, 19, true)");
+
+            // NIVEL 4: CUENTAS
+            stmt.addBatch("INSERT IGNORE INTO cuenta (id_cuenta, codigo, nombre, tipo, descripcion, saldo_inicial, nivel, parent_id, activo) VALUES " +
+                         "(36, '1.1.1.01', 'EFECTIVO EN CAJA', 'Deudora', 'Fondos en posesión directa de las cajas del ente', 0.00, 4, 21, true), " +
+                         "(37, '1.1.1.02', 'BANCOS', 'Deudora', 'Efectivo depositado en instituciones bancarias', 0.00, 4, 21, true), " +
+                         "(38, '1.1.2.01', 'COLOCACIONES A PLAZO', 'Deudora', 'Depósitos e instrumentos de inversión temporal', 0.00, 4, 22, true), " +
+                         "(39, '1.1.3.01', 'IMPUESTOS POR COBRAR', 'Deudora', 'Derechos tributarios liquidados pendientes de percibir', 0.00, 4, 23, true), " +
+                         "(40, '1.2.1.01', 'EDIFICACIONES', 'Deudora', 'Estructuras edilicias propiedad del ente', 0.00, 4, 24, true), " +
+                         "(41, '1.2.1.02', 'EQUIPOS DE COMPUTACIÓN', 'Deudora', 'Hardware, servidores y periféricos operativos', 0.00, 4, 24, true), " +
+                         "(42, '7.1.1.01', 'RESUMEN DE INGRESOS Y GASTOS', 'Acreedora', 'Cuenta liquidadora de saldos del año fiscal', 0.00, 4, 31, true)");
+
+            // NIVEL 5: SUBCUENTAS DE 1ER ORDEN
+            stmt.addBatch("INSERT IGNORE INTO cuenta (id_cuenta, codigo, nombre, tipo, descripcion, saldo_inicial, nivel, parent_id, activo) VALUES " +
+                         "(51, '1.1.1.01.01', 'CAJA CHICA', 'Deudora', 'Fondos fijos asignados a gastos menores inmediatos', 0.00, 5, 36, true), " +
+                         "(52, '1.1.1.01.02', 'CAJA PRINCIPAL', 'Deudora', 'Fondos centrales de recaudación diaria', 0.00, 5, 36, true), " +
+                         "(53, '1.1.1.02.01', 'BANCO CENTRAL DE VENEZUELA', 'Deudora', 'Cuentas operativas mantenidas en el BCV', 0.00, 5, 37, true), " +
+                         "(54, '1.1.1.02.02', 'BANCOS NACIONALES', 'Deudora', 'Cuentas en instituciones de la banca pública o privada', 0.00, 5, 37, true), " +
+                         "(55, '1.2.1.02.01', 'EQUIPOS DE PROCESAMIENTO DE DATOS', 'Deudora', 'Laptops, computadoras de escritorio y servidores', 0.00, 5, 41, true)");
+
+            // NIVEL 6: SUBCUENTAS DE 2DO ORDEN
+            stmt.addBatch("INSERT IGNORE INTO cuenta (id_cuenta, codigo, nombre, tipo, descripcion, saldo_inicial, nivel, parent_id, activo) VALUES " +
+                         "(66, '1.1.1.02.02.01', 'BANCO DE VENEZUELA S.A.', 'Deudora', 'Cuenta corriente única institucional BDV', 0.00, 6, 54, true), " +
+                         "(67, '1.1.1.02.02.02', 'BANCO DEL TESORO', 'Deudora', 'Fondos asignados en la entidad Banco del Tesoro', 0.00, 6, 54, true), " +
+                         "(68, '1.1.1.01.01.01', 'CAJA CHICA ADMINISTRACIÓN', 'Deudora', 'Fondo de uso exclusivo del departamento administrativo', 0.00, 6, 51, true), " +
+                         "(69, '1.1.1.01.01.02', 'CAJA CHICA OPERACIONES', 'Deudora', 'Fondo operativo para compras e imprevistos de campo', 0.00, 6, 51, true)");
+
+            stmt.executeBatch();
+            stmt.close();
+
             JOptionPane.showMessageDialog(null,
-                "✅ Base de datos 'proyecto' lista.\n\n" +
+                "✅ Base de datos 'proyecto' lista y unificada.\n" +
+                "Se ha cargado la jerarquía del Plan de Cuentas Patrimoniales 2024.\n\n" +
                 "Usuario: Admin\nContraseña: inventario.01",
                 "Éxito", JOptionPane.INFORMATION_MESSAGE);
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
