@@ -28,8 +28,8 @@ public class Login_Ingreso extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     u.eventoLblRecuperar(lblRecuparerContrase, this);
     AutoCorrectorGlobal.aplicar(this);
-    txtUsuario.setText("airan");
-    txtPasContraseña.setText("Fenix.20*");
+    txtUsuario.setText("admin");
+    txtPasContraseña.setText("inventario.01");
    
     }
 

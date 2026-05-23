@@ -155,6 +155,8 @@ public class CuentaDao extends ConexiónBD {
         return Lista;
     }
     
+    
+    
     private ArrayList<cuenta> ListaDeCuentaParaComboxVentas() throws ClassNotFoundException, SQLException {
         ArrayList<cuenta> Lista = new ArrayList<>();
         // CORREGIDO: Búsqueda adaptada a nombres en MAYÚSCULAS
@@ -214,7 +216,7 @@ public class CuentaDao extends ConexiónBD {
     }
     
     public void cargarComboCuentasPasivo(JComboBox<cuenta> combo) throws ClassNotFoundException, SQLException {
-        ArrayList<cuenta> lista = ListaDeCuentaParaComboxPasivo();
+        ArrayList<cuenta> lista =  ListaDeCuentaJerarquicaCompletaPasivo() ;
         combo.removeAllItems();
         for (cuenta c : lista) {
             combo.addItem(c);
@@ -225,7 +227,7 @@ public class CuentaDao extends ConexiónBD {
                 super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 if (value instanceof cuenta) {
                     cuenta c = (cuenta) value;
-                    setText(c.getNombre() + " --> " + c.getTipo() + "  --> $ " + String.format("%.2f", c.getSaldo_inicial()));
+                    setText(c.getNombre() + " --> " + c.getTipo() + "  --> $ " + String.format("%.2f", c.getSaldo_inicial()) + "  -->  "+ c.getDescripcion());
                 }
                 return this;
             }
@@ -233,7 +235,7 @@ public class CuentaDao extends ConexiónBD {
     }
 
     public void cargarComboCuentasInventario(JComboBox<cuenta> combo) throws ClassNotFoundException, SQLException {
-        ArrayList<cuenta> lista = ListaDeCuentaParaComboxInventario();
+        ArrayList<cuenta> lista = ListaDeCuentaJerarquicaCompletaDestino();
         combo.removeAllItems();
         for (cuenta c : lista) {
             combo.addItem(c);
@@ -250,7 +252,7 @@ public class CuentaDao extends ConexiónBD {
             }
          });
     }
-    
+   
     public void cargarComboCuentasCaja(JComboBox<cuenta> combo) throws ClassNotFoundException, SQLException {
         ArrayList<cuenta> lista = ListaDeCuentaParaComboxCaja();
         combo.removeAllItems();
@@ -288,6 +290,7 @@ public class CuentaDao extends ConexiónBD {
             }
         });
     }
+    
     
     public void cargarComboCuentascInventario(JComboBox<cuenta> combo) throws ClassNotFoundException, SQLException {
         ArrayList<cuenta> lista = ListaDeCuentaParaComboxAjuste();
@@ -391,6 +394,57 @@ public class CuentaDao extends ConexiónBD {
                 c.setDescripcion(rs.getString("descripcion"));
                 c.setSaldo_inicial(rs.getDouble("saldo_inicial"));
                 c.setActivo(rs.getBoolean("activo"));
+                Lista.add(c);
+            }
+        } finally {
+            this.cerrarCn();
+        }
+        return Lista;
+    }
+
+    
+    
+    
+    
+    private ArrayList<cuenta> ListaDeCuentaJerarquicaCompletaDestino() throws ClassNotFoundException, SQLException {
+        ArrayList<cuenta> Lista = new ArrayList<>();
+        String sql = "SELECT id_cuenta, codigo, nombre, tipo, descripcion, saldo_inicial  FROM cuenta  where tipo = 'Deudora' ";
+        try {
+            this.conectar();
+            ps = this.con.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                cuenta c = new cuenta();
+                c.setIdCuenta(rs.getInt("id_cuenta"));
+                c.setCodigo(rs.getString("codigo"));
+                c.setNombre(rs.getString("nombre"));
+                c.setTipo(rs.getString("tipo"));
+                c.setDescripcion(rs.getString("descripcion"));
+                c.setSaldo_inicial(rs.getDouble("saldo_inicial"));
+           
+                Lista.add(c);
+            }
+        } finally {
+            this.cerrarCn();
+        }
+        return Lista;
+    }
+      private ArrayList<cuenta> ListaDeCuentaJerarquicaCompletaPasivo() throws ClassNotFoundException, SQLException {
+        ArrayList<cuenta> Lista = new ArrayList<>();
+        String sql = "SELECT id_cuenta, codigo, nombre, tipo, descripcion, saldo_inicial  FROM cuenta  where tipo = 'Acreedora' ";
+        try {
+            this.conectar();
+            ps = this.con.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                cuenta c = new cuenta();
+                c.setIdCuenta(rs.getInt("id_cuenta"));
+                c.setCodigo(rs.getString("codigo"));
+                c.setNombre(rs.getString("nombre"));
+                c.setTipo(rs.getString("tipo"));
+                c.setDescripcion(rs.getString("descripcion"));
+                c.setSaldo_inicial(rs.getDouble("saldo_inicial"));
+           
                 Lista.add(c);
             }
         } finally {

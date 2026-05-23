@@ -125,7 +125,7 @@ public class Controlador_Pagar_Compras  implements ActionListener{
             System.getLogger(Controlador_Pagar_Compras.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
         try {
-            cuentaDao.cargarComboCuentasInventario(Compra_Pagar.jComboBoxCuentaDestino);
+            cuentaDao. cargarComboCuentasPasivo(Compra_Pagar.jComboBoxCuentaDestino);
         } catch (ClassNotFoundException ex) {
             System.getLogger(Controlador_Pagar_Compras.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         } catch (SQLException ex) {

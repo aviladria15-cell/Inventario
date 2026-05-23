@@ -40,8 +40,6 @@ public class Vista_Pagar_Compra extends javax.swing.JFrame {
         btbAsumirPago = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         TablaPagarDeudas = new javax.swing.JTable();
-        jLabel3 = new javax.swing.JLabel();
-        jComboBoxEstado = new javax.swing.JComboBox<>();
         jLabel4 = new javax.swing.JLabel();
         txtNumeroFactura = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
@@ -97,16 +95,6 @@ public class Vista_Pagar_Compra extends javax.swing.JFrame {
         jScrollPane1.setViewportView(TablaPagarDeudas);
 
         jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 350, 1290, 230));
-
-        jLabel3.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setText("Estado :");
-        jLabel3.setToolTipText("");
-        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 130, -1, 30));
-
-        jComboBoxEstado.setFont(new java.awt.Font("Georgia", 1, 14)); // NOI18N
-        jComboBoxEstado.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Pendiente", "Parcial", "Pagada" }));
-        jPanel1.add(jComboBoxEstado, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 130, 140, 30));
 
         jLabel4.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
@@ -185,11 +173,9 @@ public class Vista_Pagar_Compra extends javax.swing.JFrame {
     public static javax.swing.JButton btbVolveMenu;
     public static javax.swing.JComboBox<cuenta> jComboBoxCuenta;
     public static javax.swing.JComboBox<cuenta> jComboBoxCuentaDestino;
-    public static javax.swing.JComboBox<String> jComboBoxEstado;
     public static javax.swing.JComboBox<String> jComboBoxFormaPago;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
