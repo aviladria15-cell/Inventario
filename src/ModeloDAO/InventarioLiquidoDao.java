@@ -215,9 +215,9 @@ if (ps.executeUpdate() > 0) {
             }
 
             // ====================== REGISTRAR MOVIMIENTO ======================
-           MovientosDao movimientoDao = new MovientosDao();
+           Mvt_Liquido_Dao mvtLiquido = new Mvt_Liquido_Dao();
             
-            movimientoDao.RealizarEntradaLiquido(
+            mvtLiquido.RealizarEntradaLiquido(
                 idInventarioGenerado,
                 idProducto,
                 iv.getTipo_Producto(),

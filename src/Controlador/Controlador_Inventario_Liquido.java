@@ -9,6 +9,7 @@ import ModeloDAO.AlmacenDao;
 import ModeloDAO.CuentaDao;
 import ModeloDAO.InventarioLiquidoDao;
 import ModeloDAO.MovientosDao;
+import ModeloDAO.Mvt_Liquido_Dao;
 import ModeloDAO.ProductoDao;
 import ModeloDAO.ProveedorDao;
 import Validacion.Validar_Inventario_Liquido;
@@ -552,7 +553,7 @@ seleccionarItemCombo(Inventario_Liquido.jComboUbicacion, valorUbicacion);
         Inventario_Liquido.txtBuscarHistorial.setText("");
         Inventario_Liquido.txtBuscarProductoLiquidoTabla.setText("");
         
-        ModeloDAO.MovientosDao movientosDao = new MovientosDao();
+        ModeloDAO.Mvt_Liquido_Dao movientosDao = new Mvt_Liquido_Dao();
         
        try {
            movientosDao.MostrarMovimientoLiquido();

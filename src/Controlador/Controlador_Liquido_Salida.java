@@ -8,6 +8,7 @@ import Funciones.BCV;
 import ModeloDAO.CuentaDao;
 import ModeloDAO.InventarioLiquidoDao;
 import ModeloDAO.MovientosDao;
+import ModeloDAO.Mvt_Liquido_Dao;
 import Reportes.Ordenes_de_Salidad;
 
 import java.awt.event.ActionEvent;
@@ -97,7 +98,7 @@ reportes.generarPDFOrdenSalida(
     tasaDolar,
     detalle
 );
-        ModeloDAO.MovientosDao movientosDao = new MovientosDao();
+        ModeloDAO.Mvt_Liquido_Dao movientosDao = new Mvt_Liquido_Dao();
         try {
             movientosDao. Realizar_SALIDA_Liquido();
         } catch (ClassNotFoundException ex) {
@@ -164,13 +165,13 @@ CargaComb();
 
             ModeloDAO.CuentaDao cuentaDao = new CuentaDao();
             try {
-                cuentaDao.cargarComboCuentasCaja(Liquido_Salida.jComboBoxCuentaPasivo);
+                cuentaDao.cargarComboCuentasInventario(Liquido_Salida.jComboBoxCuentaIngreso);
             } catch (ClassNotFoundException ex) {
                 System.getLogger(Controlador_Liquido_Salida.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
             } catch (SQLException ex) {
                 System.getLogger(Controlador_Liquido_Salida.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
             }
-            cuentaDao.cargarComboCuentascVentas(Liquido_Salida.jComboBoxCuentaIngreso);
+            cuentaDao.cargarComboCuentasPasivo(Liquido_Salida.jComboBoxCuentaPasivo);
         } catch (ClassNotFoundException ex) {
             System.getLogger(Controlador_Liquido_Salida.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         } catch (SQLException ex) {

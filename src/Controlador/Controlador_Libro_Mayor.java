@@ -82,11 +82,8 @@ public class Controlador_Libro_Mayor implements ActionListener{
     }
     private  void FiltrarFecha (){
         ModeloDAO.Libro_MayorDao lM = new Libro_MayorDao();
-        try {
-            lM.FiltrarLibroMayorPorFecha(TablaLibroMayor, jDateDesde, jDateHasta);
-        } catch (SQLException ex) {
-            System.getLogger(Controlador_Libro_Mayor.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-        }
-    }
+       
+    lM.FiltrarLibroMayorPorFecha(TablaLibroMayor, jDateDesde, jDateHasta);
+}
     
 }
